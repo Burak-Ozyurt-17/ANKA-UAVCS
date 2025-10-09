@@ -1,0 +1,18 @@
+html{
+	background-color: #1F1F1F;
+    overflow-x: hidden;
+}
+body{
+    background: none !important;
+}
+#homepage{
+	color:#f8f9fa;
+}
+#gif {
+    position: absolute;
+    right: 2px;
+    top:-28%;
+    width: 800px;
+    z-index: 1;
+    pointer-events: none;
+}

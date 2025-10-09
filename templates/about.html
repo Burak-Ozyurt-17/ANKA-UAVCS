@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block title %}Proje Hakkında{% endblock %}
+{% block main %}
+ <div class="sidebar" id="sidebar">
+    <div class="logo-container">
+      <img src="static/img/ANKA(1).png" alt="Logo">
+      <span style="margin-left:-12px">ANKA </span>
+      <span style="margin-left:-8px ;color:#dedede">UAVCS </span>
+    </div>
+    <a href="/homepage" class="menu-link">
+      <i data-lucide="telescope"></i>
+      Gözlem Merkezi
+    </a>
+    <a href="/about" class="menu-link">
+      <i data-lucide="info"></i>
+      Proje Hakkında
+    </a>
+    <a href="/goal" class="menu-link">
+      <i data-lucide="goal"></i>
+      Amacımız
+    </a>
+    <a href="/contact" class="menu-link">
+      <i data-lucide="mail"></i>
+      İletişim
+    </a>
+    <a href="/settings" class="menu-link">
+      <i data-lucide="settings"></i>
+      Ayarlar
+    </a>
+    <a style="position:absolute;bottom:5%;color:rgb(226, 0, 0);"href="/logout" class="menu-link">
+      <i data-lucide="log-out"></i>
+      Çıkış Yap
+    </a>
+  </div>    
+{% endblock %}

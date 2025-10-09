@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="https://raw.githubusercontent.com/Burak-Ozyurt-17/FireHawk-UI/main/favicon.ico" type="image/x-icon">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani&display=swap" rel="stylesheet">
+  <title>ANKA UAVCS</title>
+  <link rel="stylesheet" href="static/css/homestyle.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+<br>
+<nav style="top:-25px;"class="bg-dark navbar navbar-expand-md navbar-dark">
+    <div class="container-fluid">
+        <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbar" data-bs-toggle="collapse" type="button">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbar">
+            <a class="navbar-brand" href="/"><img src="static/img/icon-512.png" style="position:absolute;bottom:5px;;width:50px;"><span style="position:relative;margin-left:45px; top:3px;"class="black">ANKA-UAVCS</span></a>
+                <ul class="navbar-nav ms-auto mt-2">
+                    <li class="nav-item"><a class="nav-link" href="/register">Kayıt Ol</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/login">Giriş Yap</a></li>
+                </ul>
+        </div>
+    </div>
+</nav>
+<div id="homepage">
+    <a style="position:relative;left:20px;top:20px;font-family: 'Russo One';font-size:100px;">ANKA-UAVCS</a><br><a style="position:absolute;margin-top:-5px;left:25px;font-family: 'Rajdhani';font-size:50px;">Gökyüzünün Zekası</a><br>
+    <a style="position:absolute;font-size:large;left:25px;font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;margin-top:60px">Görüntü işleme ve sensör verileriyle riskleri haritalayan akıllı hava kontrol sistemi.</a>
+    <a style="font-size:25px;font-family:Inter;position:absolute;top:450px;left:20px;text-decoration:none;"href="/register">Şimdi kullanın</a>
+    <a style="font-size:25px;font-family:Inter;color:#f8f9fa;text-decoration:none;position:absolute;top:450px;left:230px;" href="#learnmore">Daha Fazla 🡫</a>
+    <p style="position:absolute;top:450px;left:20px;font-size: 20px; color: #ccc;">
+    </p>
+    <img id="gif"src="/static/img/main-image.png" alt ="ANKA-UAVCS">
+</div>
+<div id="learnmore" style="
+    position: absolute;
+    top: 850px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 40px;
+    color: black;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f3f4f4;
+    width:100%;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    z-index:2;
+">
+
+    <h2 style="font-size: 36px; margin-bottom: 40px; text-align: center;">
+        Daha Fazla
+    </h2>
+
+    <div style="
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 40px;
+    ">
+
+        <!-- Paragraph 1 -->
+        <div style="flex: 0 1 380px;">
+            <h3 style="font-size: 24px; margin-bottom: 12px;">Vizyonumuz</h3>
+            <p style="font-size: 18px; line-height: 1.7;">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris pretium condimentum tellus ut finibus. Nullam tortor est, vulputate at pulvinar vel, gravida vel mauris. Aliquam ultricies sed mauris eget convallis. Integer dictum vestibulum turpis et elementum.
+                <br><br>
+                Sed nibh nisi, laoreet eu varius nec, tempor ut tortor. Nam congue nisi ante, a accumsan massa bibendum et. Duis a sodales dui. Maecenas et purus facilisis, sollicitudin leo vitae, molestie leo.
+            </p>
+        </div>
+
+        <!-- Paragraph 2 -->
+        <div style="flex: 0 1 380px;">
+            <h3 style="font-size: 24px; margin-bottom: 12px;">Ne Sunuyoruz</h3>
+            <p style="font-size: 18px; line-height: 1.7;">
+                Curabitur vitae ligula sagittis massa elementum porta. Morbi vel odio et ipsum semper lacinia. Nulla placerat nisi rutrum nunc dapibus placerat. Cras mi neque, ultrices non sodales vitae, aliquet et turpis.
+                <br><br>
+                Phasellus convallis orci risus, non fermentum augue placerat eu. Aenean non arcu euismod, placerat lacus eget, mollis ipsum. Vestibulum gravida venenatis ex eu viverra. Pellentesque habitant morbi tristique senectus.
+            </p>
+        </div>
+
+        <!-- Paragraph 3 -->
+        <div style="flex: 0 1 380px;">
+            <h3 style="font-size: 24px; margin-bottom: 12px;">Misyonumuz</h3>
+            <p style="font-size: 18px; line-height: 1.7;">
+                Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Phasellus blandit imperdiet mauris tincidunt convallis. Maecenas sem est, aliquet ac sem id, vestibulum mollis erat.
+                <br><br>
+                Nullam nec ex fermentum, venenatis ante ac, dignissim leo. Cras ac lobortis lacus, quis aliquam enim. Fusce convallis nunc lacus. Morbi porta dui eu augue mattis molestie.
+            </p>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

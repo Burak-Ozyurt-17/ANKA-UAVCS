@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+{% block title_name %}Register{% endblock %}
+{% block main %}
+<style>
+  /* Make placeholder text light gray and fully visible */
+  input::placeholder {
+    color: #bbb;
+    opacity: 1;
+  }
+  /* Consistent background and text for inputs */
+  .form-control {
+    background-color: #2c2c2c;
+    color: #eee;
+    border-radius: 8px;
+    border: none;
+  }
+  .form-control:focus {
+    background-color: #3a3a3a;
+    color: #fff;
+    box-shadow: 0 0 5px #0d6efd;
+  }
+  /* Container to center vertically and horizontally */
+  .register-card {
+    position: absolute;
+    top: 20%;
+    background-color: #1f1f1f;
+    color: white;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  }
+  /* Button styling */
+  .btn-primary {
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+  /* Link styling */
+  .login-link {
+    font-weight: 600;
+    color: #0d6efd;
+    text-decoration: none;
+  }
+  .login-link:hover {
+    text-decoration: underline;
+  }
+</style>
+<nav class="bg-dark navbar navbar-expand-md navbar-dark">
+    <div class="container-fluid">
+        <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbar" data-bs-toggle="collapse" type="button">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbar">
+            <a class="navbar-brand" href="/"><img src="static/img/icon-512.png" style="position:absolute;bottom:5px;;width:50px;"><span style="position:relative;margin-left:45px; top:3px;"class="black">ANKA-UAVCS</span></a>
+                <ul class="navbar-nav ms-auto mt-2">
+                    <li class="nav-item"><a class="nav-link" href="/register">Kayıt Ol</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/login">Giriş Yap</a></li>
+                </ul>
+        </div>
+    </div>
+</nav>
+<div class="container d-flex justify-content-center align-items-center min-vh-90">
+  <div class="register-card">
+    <h1 class="text-center mb-4" style="font-size: 2rem;">Kayıt Ol</h1>
+    <form action="/register" method="post" autocomplete="off">
+      <div class="mb-3">
+        <input style="background-color:whitesmoke;color: #1f1f1f;"autofocus name="username" type="text" class="form-control form-control-lg"
+               placeholder="Kullanıcı Adı" >
+      </div>
+      <div class="mb-3">
+        <input style="background-color:whitesmoke;color: #1f1f1f;"name="password" type="password" class="form-control form-control-lg"
+               placeholder="Şifre" >
+      </div>
+      <div class="mb-3">
+        <input style="background-color:whitesmoke;color: #1f1f1f;"name="confirmation" type="password" class="form-control form-control-lg"
+               placeholder="Şifre Tekrarı" >
+      </div>
+      <div class="d-grid">
+        <button type="submit" class="btn btn-primary btn-lg">Kayıt Ol</button>
+      </div>
+    </form>
+
+    <div class="text-center mt-4">
+      <p class="mb-0" style="font-weight: 500;">
+        Hesabınız var mı?
+        <a href="/login" class="login-link">Giriş Yap</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

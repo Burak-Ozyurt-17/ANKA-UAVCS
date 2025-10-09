@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Sensör Paneli</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .sensor-panel {
+      display: flex;
+      gap: 16px;
+      padding: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .sensor-card {
+      background-color: rgba(50,50,50, 0.95);
+      border-radius: 12px;
+      padding: 20px;
+      width: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      
+      transition: 0.3s;
+    }
+    .sensor-card:hover{
+      background-color: rgba(60,60,60, 0.90);
+      border-radius: 12px;
+      padding: 20px;
+      width: 190px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      transition: 0.3s;
+      
+    }
+
+    .sensor-icon svg {
+      width: 32px;
+      height: 32px;
+      margin-bottom: 8px;
+    }
+
+    .sensor-title {
+      font-size: 16px;
+      margin-bottom: 6px;
+      color: white;
+    }
+
+    .sensor-value {
+      font-size: 14px;
+      text-align: center;
+      color: white;
+    }
+
+    .data-safe {
+      color: #4caf50;
+    }
+
+    .data-elevated {
+      color: #f0a500;
+    }
+
+    .data-high {
+      color: #dc302d;
+    }
+  </style>
+</head>
+<body>
+
+<div class="sensor-panel">
+  <div class="sensor-card">
+    <div id="fireIcon" class="sensor-icon" data-lucide="flame"></div>
+    <div class="sensor-title">Ateş</div>
+    <div id="fireVal" class="sensor-value">--</div>
+  </div>
+  <div class="sensor-card">
+    <div id="smokeIcon" class="sensor-icon" data-lucide="wind"></div>
+    <div class="sensor-title">Duman</div>
+    <div id="smokeVal" class="sensor-value">--</div>
+  </div>
+  <div class="sensor-card">
+    <div id="tempIcon" class="sensor-icon" data-lucide="thermometer"></div>
+    <div class="sensor-title">Sıcaklık</div>
+    <div id="tempVal" class="sensor-value">-- °C</div>
+  </div>
+  <div class="sensor-card">
+    <div id="humIcon" class="sensor-icon" data-lucide="droplet"></div>
+    <div class="sensor-title">Nem</div>
+    <div id="humVal" class="sensor-value">-- %</div>
+  </div>
+</div>
+
+<script>
+  function updateSensorBox() {
+    const fireDetected = Math.random() < 0.3;
+    const smokeLevel = Math.floor(Math.random() * 100);
+    const temp = (20 + Math.random() * 25).toFixed(1);
+    const hum = Math.floor(Math.random() * 100);
+
+    const fireVal = document.getElementById("fireVal");
+    const smokeVal = document.getElementById("smokeVal");
+    const tempVal = document.getElementById("tempVal");
+    const humVal = document.getElementById("humVal");
+
+    const fireIcon = document.getElementById("fireIcon");
+    const smokeIcon = document.getElementById("smokeIcon");
+    const tempIcon = document.getElementById("tempIcon");
+    const humIcon = document.getElementById("humIcon");
+
+    [fireVal, smokeVal, tempVal, humVal, fireIcon, smokeIcon, tempIcon, humIcon].forEach(el =>
+      el.classList.remove("data-safe", "data-elevated", "data-high")
+    );
+
+    // Ateş
+    if (fireDetected) {
+      fireVal.textContent = "Ateş Tespit Edildi!";
+      fireVal.classList.add("data-high");
+      fireIcon.classList.add("data-high");
+    } else {
+      fireVal.textContent = "Ateş Yok";
+      fireVal.classList.add("data-safe");
+      fireIcon.classList.add("data-safe");
+    }
+
+    // Duman
+    if (smokeLevel > 70) {
+      smokeVal.textContent = `${smokeLevel}% – Yüksek`;
+      smokeVal.classList.add("data-high");
+      smokeIcon.classList.add("data-high");
+    } else if (smokeLevel > 40) {
+      smokeVal.textContent = `${smokeLevel}% – Orta`;
+      smokeVal.classList.add("data-elevated");
+      smokeIcon.classList.add("data-elevated");
+    } else {
+      smokeVal.textContent = `${smokeLevel}% – Düşük`;
+      smokeVal.classList.add("data-safe");
+      smokeIcon.classList.add("data-safe");
+    }
+
+    // Sıcaklık
+    if (temp > 40) {
+      tempVal.textContent = `${temp}°C – Tehlikeli`;
+      tempVal.classList.add("data-high");
+      tempIcon.classList.add("data-high");
+    } else if (temp > 30) {
+      tempVal.textContent = `${temp}°C – Yüksek`;
+      tempVal.classList.add("data-elevated");
+      tempIcon.classList.add("data-elevated");
+    } else {
+      tempVal.textContent = `${temp}°C – Normal`;
+      tempVal.classList.add("data-safe");
+      tempIcon.classList.add("data-safe");
+    }
+
+    // Nem
+    if (hum < 20 || hum > 80) {
+      humVal.textContent = `${hum}% – Tehlikeli`;
+      humVal.classList.add("data-high");
+      humIcon.classList.add("data-high");
+    } else if ((hum >= 20 && hum < 30) || (hum > 70 && hum <= 80)) {
+      humVal.textContent = `${hum}% – Orta`;
+      humVal.classList.add("data-elevated");
+      humIcon.classList.add("data-elevated");
+    } else {
+      humVal.textContent = `${hum}% – Normal`;
+      humVal.classList.add("data-safe");
+      humIcon.classList.add("data-safe");
+    }
+
+    lucide.createIcons();
+
+    document.querySelectorAll('.sensor-icon').forEach(container => {
+      const svg = container.querySelector('svg');
+      if (svg) {
+        if (container.classList.contains('data-high')) {
+          svg.style.stroke = '#dc302d';
+        } else if (container.classList.contains('data-elevated')) {
+          svg.style.stroke = '#f0a500';
+        } else {
+          svg.style.stroke = '#4caf50';
+        }
+      }
+    });
+  }
+
+  updateSensorBox();
+  setInterval(updateSensorBox, 3000);
+</script>
+
+</body>
+</html>
