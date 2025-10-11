@@ -16,28 +16,27 @@
   <div id="minimapDiv2"></div>
   <div id="infoPanel"></div>
   <div id="screenFilter"></div>
-
-  <div class="riskmap">
+  
     <div id="camerabox">
-      <div id="camerabox_box"></div>
+      <img style="bottom:0;left:0;z-index: -1;overflow-x: hidden;width:145%;"id="camerabox" src="{{cam_feed}}" alt="Kamera Görüntüsü">
+      <div id="camerabox_box">
+        <div id="switchLabel">Otomatik Odak</div>
+        <label class="switch">
+          <input type="checkbox">
+          <span class="slider"></span>
+        </label>
+      </div>
       <div id="infoPanelCam"></div>
-      <div id="switchLabel">Otomatik Odak</div>
-      <label class="switch">
-        <input type="checkbox">
-        <span class="slider"></span>
-      </label>
-      <div id="detectionText">Algılanan Nesne:</div>
-      <div id="detection">Ateş</div>
 
       <div id="liveLabel">
         <div class="dot"></div>
         Canlı Yayın
       </div>
       <div id="connectionLabel">
-        <img id="live_feed" src="http://127.0.0.1/" alt="Kamera Görüntüsü">
+        
       </div>
     </div>
-  </div>
+  
 
   <div id="altitudeContainer">
     <div id="altitudeScroller">
@@ -66,6 +65,7 @@
 
   <script src="https://js.arcgis.com/4.32/"></script>
   <script>
+    
     require([
       "esri/Map", "esri/views/SceneView", "esri/views/MapView",
       "esri/layers/GraphicsLayer", "esri/Graphic", "esri/geometry/Point",
@@ -109,7 +109,7 @@
       const minimapView = new MapView({
         container: "minimapDiv",
         map: miniMap,
-        center: [32.8597, 39.9334],
+        center: [ 28.9802621, 41.0320231],
         zoom: 14,
         constraints: { rotationEnabled: false },
         ui: { components: [] }
@@ -117,7 +117,7 @@
       const minimapView2 = new MapView({
         container: "minimapDiv2",
         map: miniMap,
-        center: [32.8597, 39.9334],
+        center: [28.9802621, 41.0320231],
         zoom: 14,
         constraints: { rotationEnabled: false },
         ui: { components: [] }
@@ -128,8 +128,8 @@
 
       let altitude = 50;
       let dronePoint = new Point({
-        x: 32.8597,
-        y: 39.9334,
+        x: 28.9802621,
+        y: 41.0320231,
         z: altitude,
         spatialReference: { wkid: 4326 }
       });
@@ -160,8 +160,8 @@
       let prevPos = dronePoint.clone();
       let targetPos = new Point({
         x: prevPos.x + 0.0005,
-        y: prevPos.y,
-        z: altitude,
+        y: prevPos.y ,
+        z: altitude + 0.0005,
         spatialReference: prevPos.spatialReference
       });
 
@@ -372,25 +372,6 @@
 
       setInterval(runCalculation, 120);
 
-      function fetchDetections() {
-        fetch('http://localhost:')
-          .then(res => res.json())
-          .then(data => {
-            const names = data.map(item => item.class_name).join(', ');
-            console.log(names);
-            document.getElementById('detectionText').innerText = names;
-          })
-          .catch(err => {
-            document.getElementById('detectionText').innerText = 'Veri alınamadı';
-            console.error('Hata:', err);
-          });
-      }
-
-      document.addEventListener('DOMContentLoaded', () => {
-        fetchDetections();
-        setInterval(fetchDetections, 1000);
-      });
-
       const camImg = document.querySelector("#camerabox img");
       const liveLabel = document.getElementById("liveLabel");
       const connectionLabel = document.getElementById("connectionLabel");
@@ -399,11 +380,7 @@
         liveLabel.style.display = "flex";
         connectionLabel.textContent = "";
       };
-
-      camImg.onerror = () => {
-        liveLabel.style.display = "none";
-        connectionLabel.textContent = "Görüntü Bekleniyor...";
-      };
+      
     });
   </script>
 </body>

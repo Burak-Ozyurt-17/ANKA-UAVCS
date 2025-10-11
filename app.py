@@ -99,11 +99,6 @@ def about():
     return render_template("about.html")
 
 @login_required
-@app.route("/goal")
-def goal():
-    return render_template("goal.html")
-
-@login_required
 @app.route("/contact")
 def contact():
     return render_template("contact.html")
@@ -114,9 +109,52 @@ def settings():
     return render_template("settings.html")
 
 @login_required
+@app.route("/devices")
+def devices():
+    with sqlite3.connect("database.db") as con:
+        con.row_factory = sqlite3.Row
+        db = con.cursor()
+        try:
+            device = db.execute(
+                "SELECT * FROM devices WHERE user_id = ?",
+                (session["user_id"],)
+            ).fetchone()
+        except TypeError:
+            device = None
+    return render_template("devices.html",model_info = device["model"],feed_url = device["cam_feed"],data_url=["data_feed"])
+
+@login_required
+@app.route("/submitsettings", methods=["GET","POST"])
+def submitsettings():
+    user_id = session["user_id"]
+    model = request.form.get("model_info")
+    feed_url = request.form.get("feed_url")
+    data_url = request.form.get("data_url")
+    with sqlite3.connect("database.db") as con:
+        db = con.cursor()
+        exist = db.execute(
+                "SELECT model FROM devices WHERE user_id = ?",
+                (session["user_id"],)
+            ).fetchone()
+        if exist:
+            db.execute("UPDATE devices SET(model,cam_feed,data_feed) = (?,?,?) WHERE user_id = ?",(model,feed_url,data_url,user_id,))
+        else:
+            db.execute("INSERT INTO devices (user_id,model,cam_feed,data_feed) VALUES(?,?,?,?)",(user_id,model,feed_url,data_url,))
+        con.commit()
+    
+    return redirect("/devices")
+
+@login_required
 @app.route("/3dmap")
 def map3d():
-    return render_template("3dmap.html")
+    with sqlite3.connect("database.db") as con:
+        con.row_factory = sqlite3.Row
+        db = con.cursor()
+        feed = db.execute(
+            "SELECT cam_feed FROM devices WHERE user_id = ?",
+            (session["user_id"],)
+        ).fetchone()["cam_feed"]
+        return render_template("3dmap.html",cam_feed = feed)
 
 @login_required
 @app.route("/sensors")

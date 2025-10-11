@@ -130,3 +130,27 @@
         width: 100%;
       }
     }
+
+#device-main{
+  position:absolute;
+  top:5%;
+  left:15%;
+}
+
+#device-main input{
+  background-color: #1f1f1f;
+  color: #c4c4d2;
+  border-radius: 5px;
+  border: none;
+  width:150%;
+}
+#save-changes{
+  position:fixed;
+  bottom: 2%;
+  right: 1%;
+  background-color:rgb(0, 89, 255);
+  border: none;
+  border-radius: 8px;
+  padding: 5px 8px;
+  color:white;
+}
