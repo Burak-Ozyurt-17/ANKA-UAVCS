@@ -119,9 +119,9 @@ def devices():
                 "SELECT * FROM devices WHERE user_id = ?",
                 (session["user_id"],)
             ).fetchone()
+            return render_template("devices.html",model_info = device["model"],feed_url = device["cam_feed"],data_url=["data_feed"])
         except TypeError:
-            device = None
-    return render_template("devices.html",model_info = device["model"],feed_url = device["cam_feed"],data_url=["data_feed"])
+            return render_template("devices.html",model_info = None,feed_url = None,data_url=None)
 
 @login_required
 @app.route("/submitsettings", methods=["GET","POST"])
@@ -150,10 +150,13 @@ def map3d():
     with sqlite3.connect("database.db") as con:
         con.row_factory = sqlite3.Row
         db = con.cursor()
-        feed = db.execute(
-            "SELECT cam_feed FROM devices WHERE user_id = ?",
-            (session["user_id"],)
-        ).fetchone()["cam_feed"]
+        try:
+            feed = db.execute(
+                "SELECT cam_feed FROM devices WHERE user_id = ?",
+                (session["user_id"],)
+            ).fetchone()["cam_feed"]
+        except TypeError:
+            feed = None
         return render_template("3dmap.html",cam_feed = feed)
 
 @login_required
