@@ -1,6 +1,6 @@
 # ANKA-UAVCS
 
-![Logo](logo.png)
+![Logo](media/logo.png)
 
 ## Table of Contents
 - [About ANKA-UAVCS](#about-anka-uavcs)
@@ -72,8 +72,8 @@ To set up ANKA-UAVCS locally, ensure that **Python 3.9+** is installed.
 ---
 ## Screenshots
 
-![App Screenshot](screenshot1.png)
-![App Screenshot](screenshot2.png)
+![App Screenshot](media/screenshot1.png)
+![App Screenshot](media/screenshot2.png)
 
 ---
 ## System Overview
