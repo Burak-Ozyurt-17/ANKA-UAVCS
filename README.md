@@ -1,6 +1,6 @@
 # ANKA-UAVCS
 
-![Logo](media/logo.png)
+![Logo](media/anka.png)
 
 ## Table of Contents
 - [About ANKA-UAVCS](#about-anka-uavcs)
