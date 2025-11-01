@@ -119,7 +119,7 @@ def devices():
                 "SELECT * FROM devices WHERE user_id = ?",
                 (session["user_id"],)
             ).fetchone()
-            return render_template("devices.html",model_info = device["model"],feed_url = device["cam_feed"],data_url=["data_feed"])
+            return render_template("devices.html",model_info = device["model"],feed_url = device["cam_feed"],data_url=device["data_feed"])
         except TypeError:
             return render_template("devices.html",model_info = None,feed_url = None,data_url=None)
 
