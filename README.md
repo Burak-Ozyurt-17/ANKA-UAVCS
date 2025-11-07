@@ -73,7 +73,7 @@ To set up ANKA-UAVCS locally, ensure that **Python 3.9+** is installed.
 ## Screenshots
 
 ![App Screenshot](media/Screenshot1.png)
-![App Screenshot](media/Screenshot.png)
+![App Screenshot](media/Screenshot2.png)
 
 ---
 ## System Overview
