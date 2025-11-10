@@ -1,35 +1,61 @@
 {% extends "layout.html" %}
 {% block title %}Hakkında{% endblock %}
 {% block main %}
- <div class="sidebar" id="sidebar">
-    <div class="logo-container">
-      <img src="static/img/ANKA(1).png" alt="Logo">
-      <span style="margin-left:-12px">ANKA </span>
-      <span style="margin-left:-8px ;color:#dedede">UAVCS </span>
-    </div>
-    <a href="/homepage" class="menu-link">
-      <i data-lucide="telescope"></i>
-      Gözlem Merkezi
-    </a>
-    <a href="/devices" class="menu-link">
-      <i data-lucide="drone"></i>
-      Aracım
-    </a>
-    <a href="/about" class="menu-link">
-      <i data-lucide="info"></i>
-      Proje Hakkında
-    </a>
-    <a href="/contact" class="menu-link">
-      <i data-lucide="mail"></i>
-      İletişim
-    </a>
-    <a href="/settings" class="menu-link">
-      <i data-lucide="settings"></i>
-      Ayarlar
-    </a>
-    <a style="position:absolute;bottom:5%;color:rgb(226, 0, 0);"href="/logout" class="menu-link">
-      <i data-lucide="log-out"></i>
-      Çıkış Yap
-    </a>
-  </div>    
+<div class="sidebar" id="sidebar">
+  <div class="logo-container">
+    <img src="static/img/ANKA(1).png" alt="Logo">
+    <span style="margin-left:-12px">ANKA </span>
+    <span style="margin-left:-8px; color:#dedede">UAVCS</span>
+  </div>
+  <a href="/homepage" class="menu-link">
+    <i data-lucide="telescope"></i>
+    Gözlem Merkezi
+  </a>
+  <a href="/devices" class="menu-link">
+    <i data-lucide="drone"></i>
+    Aracım
+  </a>
+  <a href="/about" class="menu-link active">
+    <i data-lucide="info"></i>
+    Proje Hakkında
+  </a>
+  <a href="/contact" class="menu-link">
+    <i data-lucide="mail"></i>
+    İletişim
+  </a>
+  <a href="/settings" class="menu-link">
+    <i data-lucide="settings"></i>
+    Ayarlar
+  </a>
+  <a style="position:absolute; bottom:5%; color:rgb(226, 0, 0);" href="/logout" class="menu-link">
+    <i data-lucide="log-out"></i>
+    Çıkış Yap
+  </a>
+</div>
+
+<div class="content" style="margin-left:260px; padding:40px; color:#e0e0e0;">
+  <h1 style="font-size:2rem; color:#d84f00;">ANKA - Akıllı Navigasyon ve Kontrol Ağı</h1>
+  <p style="margin-top:20px; font-size:1.1rem; line-height:1.7;">
+    <strong>ANKA-UAVCS</strong> (Unmanned Aerial Vehicle Control System), insansız hava araçlarının 
+    güvenli, akıllı ve otonom bir şekilde yönetilmesini hedefleyen web tabanlı bir kontrol ve 
+    gözlem sistemidir. Sistem; gerçek zamanlı konum takibi, görüntü işleme, risk analizi ve 
+    harita tabanlı veri görselleştirme özelliklerini bir araya getirir.
+  </p>
+
+  <p style="margin-top:15px; font-size:1.05rem; line-height:1.7;">
+    Proje, <strong>Milli Teknoloji Hamlesi</strong> vizyonu doğrultusunda geliştirilmektedir ve 
+    yerli yazılım teknolojileri ile donatılmıştır. <br>
+    <strong>Python (Flask)</strong> tabanlı altyapısı, <strong>ArcGIS</strong> destekli 3B haritalama 
+    arayüzü ve <strong>YOLOv8</strong> nesne tanıma modeli sayesinde sahadaki veriler 
+    dinamik olarak işlenip kullanıcıya aktarılır.
+  </p>
+
+  <p style="margin-top:15px; font-size:1rem; line-height:1.6;">
+    ANKA-UAVCS; afet yönetimi, tarımsal gözlem, çevresel analiz ve güvenlik uygulamaları gibi 
+    alanlarda kullanılabilecek şekilde tasarlanmıştır. <br>
+    Hedef, yapay zekâ destekli sistemlerle <strong>ulusal savunma ve mühendislik teknolojilerinde</strong> 
+    yenilikçi çözümler üretmektir.
+  </p>
+
+</div>
 {% endblock %}
