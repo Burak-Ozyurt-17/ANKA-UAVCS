@@ -7,6 +7,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from utils import error, login_required
 
+
+
 app = Flask(__name__)
 
 app.config["SESSION_PERMANENT"] = False
@@ -17,8 +19,9 @@ Session(app)
 def homepage():
     return render_template("homepage.html")
 
-@login_required
+
 @app.route("/homepage")
+@login_required
 def index():
     return render_template("index.html")
 
@@ -31,13 +34,13 @@ def register():
         confirmation = request.form.get("confirmation")
         
         if not username:
-            return ("Missing Username")
+            return ("Lütfen kullanıcı adınızı girin")
         elif not password:
-            return ("Missing Password")
+            return ("Lütfen Şifrenizi girin")
         elif not confirmation:
-            return ("Missing Confirmation")
+            return ("Şifrenizi Onaylayın")
         elif confirmation != password:
-            return ("Unmatching Password Confirmation")
+            return ("Şifreler aynı değil")
 
         with sqlite3.connect("database.db") as con:
             con.row_factory = sqlite3.Row
@@ -45,7 +48,7 @@ def register():
 
             existing_user = db.execute("SELECT username FROM users WHERE username = ?", (username,)).fetchone()
             if existing_user:
-                return ("Username has already been taken")
+                return ("Kullanıcı adı daha önce alınmış")
 
             try:
                 db.execute("INSERT INTO users (username,hash) VALUES(?,?)",
@@ -56,7 +59,7 @@ def register():
                 session["user_id"] = user["id"]
                 
             except sqlite3.IntegrityError:
-                return ("Username has already been taken")
+                return ("Kullanıcı adı daha önce alınmış")
 
         return redirect("/homepage")
     return render_template("register.html")
@@ -67,9 +70,9 @@ def login():
     session.clear()
     if request.method == "POST":
         if not request.form.get("username"):
-            return "kullanıcı adı yok"
+            return "kullanıcı adı eksik"
         elif not request.form.get("password"):
-            return "Missing Password"
+            return "Eksik şifre"
             
         with sqlite3.connect("database.db") as con:
             con.row_factory = sqlite3.Row
@@ -81,7 +84,7 @@ def login():
             ).fetchone()
 
             if row is None or not check_password_hash(row["hash"], request.form.get("password")):
-                return "Username is invalid"
+                return "Kullanıcı adı yanlış"
                 
             session["user_id"] = row["id"]
 
@@ -93,23 +96,25 @@ def logout():
     session.clear()
     return redirect("/")
 
-@login_required
+
 @app.route("/about")
+@login_required
 def about():
     return render_template("about.html")
 
-@login_required
 @app.route("/contact")
+@login_required
 def contact():
     return render_template("contact.html")
 
-@login_required
 @app.route("/settings")
+@login_required
 def settings():
     return render_template("settings.html")
 
-@login_required
+
 @app.route("/devices")
+@login_required
 def devices():
     with sqlite3.connect("database.db") as con:
         con.row_factory = sqlite3.Row
@@ -119,12 +124,12 @@ def devices():
                 "SELECT * FROM devices WHERE user_id = ?",
                 (session["user_id"],)
             ).fetchone()
-            return render_template("devices.html",model_info = device["model"],feed_url = device["cam_feed"],data_url=device["data_feed"])
+            return render_template("devices.html",model_info = device["model"],feed_url = device["cam_feed"],data_url = device["data_feed"])
         except TypeError:
             return render_template("devices.html",model_info = None,feed_url = None,data_url=None)
 
-@login_required
 @app.route("/submitsettings", methods=["GET","POST"])
+@login_required
 def submitsettings():
     user_id = session["user_id"]
     model = request.form.get("model_info")
@@ -144,27 +149,28 @@ def submitsettings():
     
     return redirect("/devices")
 
+
+@app.route("/3dmap", methods = ["POST","GET"])
 @login_required
-@app.route("/3dmap")
 def map3d():
     with sqlite3.connect("database.db") as con:
         con.row_factory = sqlite3.Row
         db = con.cursor()
         try:
             feed = db.execute(
-                "SELECT cam_feed FROM devices WHERE user_id = ?",
+                "SELECT * FROM devices WHERE user_id = ?",
                 (session["user_id"],)
-            ).fetchone()["cam_feed"]
+            ).fetchone()
         except TypeError:
             feed = None
-        return render_template("3dmap.html",cam_feed = feed)
+        return render_template("3dmap.html",cam_feed = feed["cam_feed"], data_feed = feed["data_feed"], model_name = feed["model"])
 
-@login_required
-@app.route("/sensors")
-def sensors():
-    return render_template("sensors.html")
 
-@login_required
 @app.route("/riskmap")
+@login_required
 def riskmap():
     return render_template("riskmap.html")
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
