@@ -1,2 +1,2 @@
 flask,
-flask_session,
+flask_session;
