@@ -1,0 +1,30 @@
+html{
+	background-color: #1F1F1F;
+    overflow-x: hidden;
+}
+body{
+    background: none !important;
+}
+#homepage{
+	color:#f8f9fa;
+}
+#gif {
+    position: absolute;
+    right: 2px;
+    top:-28%;
+    width: 800px;
+    z-index: 1;
+    pointer-events: none;
+}
+#downloads{
+    position: relative;
+    top: 200px;
+    left:-40px;
+    color:#f8f9fa;
+    width: fit-content;
+    padding: 40px;
+    border-radius: 12px;
+    margin-top:30px;
+    font-size: large;
+    background-color: #0077c7;
+}
