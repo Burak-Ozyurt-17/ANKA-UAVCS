@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>3D Drone</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.32/esri/themes/light/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/map3d.css') }}">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <div id="viewDiv"></div>
+  <div id="minimapDiv"></div>
+  <div id="minimapDiv2"></div>
+  <div id="infoPanel"></div>
+  <div id="modelInfo">
+    <a>Model Adı: {{ model_name }}</a><br>
+    <a>Kumanda Kaynağı:<span id ="controller_name"></span></a>
+  </div>
+  <div id="screenFilter"></div>
+  <div id="serverResponseError"></div>
+
+    <div id="camerabox">
+      <img style="bottom:0;left:0;z-index: -1;overflow-x: hidden;width:100%;"id="camerabox" src="{{cam_feed}}" alt="Kamera Görüntüsü">
+      <div id="camerabox_box">
+        <div id="switchLabel">Otomatik Odak</div>
+        <label class="switch">
+          <input type="checkbox">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div id="infoPanelCam"></div>
+
+      <div id="liveLabel">
+        <div class="dot"></div>
+        Canlı Yayın
+      </div>
+      <div id="connectionLabel">
+
+      </div>
+    </div>
+
+
+  <div id="altitudeContainer">
+    <div id="altitudeScroller">
+      <div id="altitudeLabels"></div>
+    </div>
+    <div id="targetLine"></div>
+    <div id="leftSolidLine"></div>
+    <div id="rightSolidLine"></div>
+    <div id="altitudeValueBox">50 m</div>
+  </div>
+
+  <div id="gaugeContainer">
+    <img src="static/img/Gösterge.png"
+         style="position:absolute; bottom:5px; left:3px; width:140px; height:140px;">
+    <canvas id="gaugeCanvas" width="80%" height="80"></canvas>
+    <div id="speedText"></div>
+  </div>
+
+  <div id="topRightBox">
+    <iframe src="{{ url_for('riskmap')}}" width="150px" height="150px"></iframe>
+  </div>
+
+  <div id="topCenterBox">
+    <div class="sensor-panel">
+      <div class="sensor-card">
+        <div id="fireIcon" class="sensor-icon" data-lucide="flame"></div>
+        <div class="sensor-title">Ateş</div>
+        <div id="fireVal" class="sensor-value">--</div>
+      </div>
+      <div class="sensor-card">
+        <div id="smokeIcon" class="sensor-icon" data-lucide="wind"></div>
+        <div class="sensor-title">Duman</div>
+        <div id="smokeVal" class="sensor-value">--</div>
+      </div>
+      <div class="sensor-card">
+        <div id="tempIcon" class="sensor-icon" data-lucide="thermometer"></div>
+        <div class="sensor-title">Sıcaklık</div>
+        <div id="tempVal" class="sensor-value">-- °C</div>
+      </div>
+      <div class="sensor-card">
+        <div id="humIcon" class="sensor-icon" data-lucide="droplet"></div>
+        <div class="sensor-title">Nem</div>
+        <div id="humVal" class="sensor-value">-- %</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://js.arcgis.com/4.32/"></script>
+  <script>
+
+    require([
+      "esri/Map", "esri/views/SceneView", "esri/views/MapView",
+      "esri/layers/GraphicsLayer", "esri/Graphic", "esri/geometry/Point",
+      "esri/symbols/SimpleMarkerSymbol",
+      "esri/layers/SceneLayer"
+    ], function(
+      Map, SceneView, MapView, GraphicsLayer, Graphic, Point,
+      SimpleMarkerSymbol, SceneLayer
+    ) {
+
+      const mainMap = new Map({ basemap: "hybrid", ground: "world-elevation" });
+      const miniMap = new Map({ basemap: "dark-gray-vector" });
+
+      const buildingLayer = new SceneLayer({
+        url: "https://basemaps3d.arcgis.com/arcgis/rest/services/OpenStreetMap3D_Buildings_v1/SceneServer",
+        renderer: {
+          type: "simple",
+          symbol: {
+            type: "mesh-3d",
+            symbolLayers: [{
+              type: "fill",
+              material: {
+                color: "#ffffff"
+              }
+            }]
+          }
+        }
+      });
+      const treeLayer = new SceneLayer({
+        url: "https://basemaps3d.arcgis.com/arcgis/rest/services/OpenStreetMap3D_Trees_Realistic_v1/SceneServer"
+      });
+      mainMap.add(buildingLayer);
+      mainMap.add(treeLayer);
+
+      const sceneView = new SceneView({
+        container: "viewDiv",
+        map: mainMap,
+        camera: {}
+      });
+
+      const minimapView = new MapView({
+        container: "minimapDiv",
+        map: miniMap,
+        center: [ 28.9802621, 41.0320231],
+        zoom: 14,
+        constraints: { rotationEnabled: false },
+        ui: { components: [] }
+      });
+      const minimapView2 = new MapView({
+        container: "minimapDiv2",
+        map: miniMap,
+        center: [28.9802621, 41.0320231],
+        zoom: 14,
+        constraints: { rotationEnabled: false },
+        ui: { components: [] }
+      });
+
+      const graphicsLayer = new GraphicsLayer({ elevationInfo: { mode: "relative-to-ground" } });
+      mainMap.add(graphicsLayer);
+
+      async function fetch_data() {
+        try {
+          const response = await fetch("{{ data_feed }}", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({}),
+          });
+          
+          if (!response.ok) {
+            document.getElementById("controller_name").innerText = "Kayıt alınamadı";
+            document.getElementById("serverResponseError").style.display = "block";
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+          const altBox = document.getElementById("altitudeValueBox");
+          if (altBox) {
+            const clampedAlt = Math.min(Math.max(data.altitude, 0), 100);
+            altBox.textContent = `${clampedAlt.toFixed(1)} m`;
+            updateAltitudeIndicator(clampedAlt);
+            targetAltitude = clampedAlt;
+          }
+          document.getElementById("controller_name").innerText = data.controller_info;
+          updateSensorBox(
+            data.fire, 
+            data.smoke.toFixed(1), 
+            data.temp.toFixed(1), 
+            data.humidity.toFixed(1)
+          );
+        } catch (error) {
+          document.getElementById("controller_name").innerText = "Kayıt alınamadı";
+          console.error("Fetch error:", error);
+        }
+      }
+
+      async function fetch_coordinates() {
+        try {
+          const response = await fetch("{{ data_feed }}", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({}),
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+
+          if (isAnimating) return;
+          const curr = drone.geometry;
+          const moveStep = 0.00001;
+
+          const targetPoint = new Point({
+            x: data.longitude,
+            y: data.latitude,
+            z: data.altitude,
+            spatialReference: curr.spatialReference
+          });
+          
+          const dx = targetPoint.x - curr.x;
+          const dy = targetPoint.y - curr.y;
+          const dz = targetPoint.z - curr.z;
+          const horizontalDistance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (horizontalDistance < moveStep * 0.5) {
+            return;
+          }
+          
+          const angle = Math.atan2(dy, dx);
+          const newX = data.latitude
+          const newY = data.longitude
+          const newZ = data.altitude
+
+          const nextPos = new Point({
+            x: newX,
+            y: newY,
+            z: newZ,
+            spatialReference: curr.spatialReference
+          });
+
+          drone.geometry = nextPos;
+          miniMarker.geometry = nextPos;
+          minimapView.center = [nextPos.x, nextPos.y];
+          minimapView2.center = [nextPos.x, nextPos.y];
+          const heading = angle + 90;
+
+          prevPos = nextPos.clone();
+
+          isAnimating = true;
+          try {
+            await sceneView.goTo({
+              target: drone,
+              heading: heading,
+              tilt: tiltAngle,
+              distance: followDistance
+            }, {
+              animate: true,
+              duration: animDuration,
+              easing: "linear"
+            });
+          } catch (err) {
+            console.warn("goTo animation interrupted");
+          }
+          isAnimating = false; 
+        } catch (error) {
+          console.error("Fetch error:", error);
+        }
+      }
+      
+
+      async function save_log(altitude,latitude,longitude) {
+        try {
+          const response = await fetch("{{ data_feed }}", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({}),
+          });
+          const data = await response.json();
+          risk_point = 1
+          try {
+            const response = await fetch(`/save_log/${altitude}/${latitude}/${longitude}/${data.temp}/${data.humidity}/${data.smoke}/${data.fire}/${risk_point}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({}),
+            });
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            } 
+          }catch(error){
+            console.log("Error while saving log:", error)
+          }  
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          } 
+        }catch(error){
+          console.log("Error while saving log:", error)
+        }
+      }
+
+      let altitude = 50; 
+      let targetAltitude = 50;
+      let targetLatitude = 41.0320231;
+      let targetLongitude = 28.9802621; 
+
+      let dronePoint = new Point({
+        x: 28.9802621,
+        y: 41.0320231,
+        z: altitude,
+        spatialReference: { wkid: 4326 }
+      });
+      const droneSymbol = {
+        type: "point-3d",
+        symbolLayers: [{
+          type: "object",
+          resource: {
+            href: "static/img/drone_model.glb"
+          },
+          height: 0.125,
+          width: 0.5,
+          depth: 0.5
+        }]
+      };
+      const markerSymbol = new SimpleMarkerSymbol({
+        style: "circle",
+        color: "red",
+        size: 10
+      });
+
+      const drone = new Graphic({ geometry: dronePoint, symbol: droneSymbol });
+      const miniMarker = new Graphic({ geometry: dronePoint, symbol: markerSymbol });
+
+      graphicsLayer.add(drone);
+      minimapView.graphics.add(miniMarker);
+
+      let prevPos = dronePoint.clone();
+      let targetPos = new Point({
+        x: prevPos.x + 0.0005,
+        y: prevPos.y ,
+        z: altitude + 0.0005,
+        spatialReference: prevPos.spatialReference
+      });
+
+      const followDistance = 50;
+      const tiltAngle = 75;
+      const animDuration = 0.2;
+      let isAnimating = false;
+
+      const altitudeLabels = document.getElementById("altitudeLabels");
+      altitudeLabels.innerHTML = "";
+      for (let i = 0; i <= 100; i += 5) {
+        const label = document.createElement("div");
+        label.className = "altitudeLabel";
+        label.textContent = `${i} m`;
+        altitudeLabels.appendChild(label);
+      }
+
+      function updateAltitudeIndicator(currentAltitude) {
+        const container = document.getElementById("altitudeContainer");
+        const labelHeight = 30;
+        const step = 5;
+        const maxAltitude = 100;
+        const clamped = Math.max(0, Math.min(currentAltitude, maxAltitude));
+        const index = (maxAltitude - clamped) / step;
+        const offset = index * labelHeight;
+        const centerOffset = (container.clientHeight - labelHeight) / 2;
+        altitudeLabels.style.transform = `translateY(${centerOffset - offset}px)`;
+        container.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+        container.style.border = "1px solid #aaa";
+      }
+
+      function updateInfoPanel(fps) {
+        const { x, y } = drone.geometry;
+        document.getElementById("infoPanel").innerHTML = `
+          <strong>Enlem:</strong> ${y.toFixed(6)}<br>
+          <strong>Boylam:</strong> ${x.toFixed(6)}<br>
+        `;
+
+        document.getElementById("infoPanelCam").innerHTML = `
+          <strong>Enlem:</strong> ${y.toFixed(6)}<br>
+          <strong>Boylam:</strong> ${x.toFixed(6)}<br>
+        `;
+      }
+      setInterval(fetch_data, 500); 
+      setInterval(fetch_coordinates, 200); 
+      let lastFrameTime = performance.now();
+      function animateFPS() {
+        const now = performance.now();
+        const fps = 1000 / (now - lastFrameTime);
+        lastFrameTime = now;
+        updateInfoPanel(fps);
+        requestAnimationFrame(animateFPS);
+      }
+      animateFPS();
+
+      function updateSpeedGauge(speed) {
+        const canvas = document.getElementById("gaugeCanvas");
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = 35;
+        const startAngle = 0.75 * Math.PI;
+        const endAngle = 2.25 * Math.PI;
+
+        const normalized = Math.min(speed, 80) / 80;
+        const needleAngle = startAngle + normalized * (2 * Math.PI - startAngle - (2 * Math.PI - endAngle));
+        const needleLength = radius + 5;
+        const needleX = centerX + needleLength * Math.cos(needleAngle);
+        const needleY = centerY + needleLength * Math.sin(needleAngle);
+
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(needleX, needleY);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "white";
+        ctx.stroke();
+
+        document.getElementById("speedText").textContent = `${Math.round(speed)} km/h`;
+      }
+
+      function toRad(angle) {
+        return angle * Math.PI / 180;
+      }
+      function toDeg(rad) {
+        return rad * 180 / Math.PI;
+      }
+      function haversineDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = toRad(lat2 - lat1);
+        const dLon = toRad(lon2 - lon1);
+        const a = Math.sin(dLat / 2) ** 2 +
+                  Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                  Math.sin(dLon / 2) ** 2;
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+      }
+      function distance3D(lat1, lon1, alt1, lat2, lon2, alt2) {
+        const horizontalDist = haversineDistance(lat1, lon1, lat2, lon2);
+        const altDiffKm = (alt2 - alt1) / 1000;
+        return Math.sqrt(horizontalDist ** 2 + altDiffKm ** 2);
+      }
+
+      let lastTime = Date.now();
+      let lastLat = prevPos.y;
+      let lastLon = prevPos.x;
+      let lastAlt = prevPos.z;
+      let smoothSpeed = 0;
+      const alpha = 0.2;
+
+      function runCalculation() {
+        if (!drone || !prevPos) return;
+
+        const now = Date.now();
+        const timeDifferenceSec = (now - lastTime) / 1000;
+
+        const lat1 = lastLat;
+        const lon1 = lastLon;
+        const alt1 = lastAlt;
+        save_log(alt1,lat1,lon1)
+        const lat2 = drone.geometry.y;
+        const lon2 = drone.geometry.x;
+        const alt2 = drone.geometry.z;
+
+        const dist = distance3D(lat1, lon1, alt1, lat2, lon2, alt2);
+        const instantSpeed = dist / (timeDifferenceSec / 3600);
+        smoothSpeed = alpha * instantSpeed + (1 - alpha) * smoothSpeed;
+
+        updateSpeedGauge(smoothSpeed);
+
+        console.log("Enlem 1:", lat1.toFixed(6), "Enlem 2:", lat2.toFixed(6));
+        console.log("Boylam 1:", lon1.toFixed(6), "Boylam 2:", lon2.toFixed(6));
+        console.log("Yükseklik 1:", alt1.toFixed(2), "Yükseklik 2:", alt2.toFixed(2));
+        console.log("Zaman Farkı (s):", timeDifferenceSec.toFixed(3));
+        console.log("Hesaplanan hız: ",smoothSpeed.toFixed(2));
+        console.log("--------------------------------------");
+
+        lastLat = lat2;
+        lastLon = lon2;
+        lastAlt = alt2;
+        lastTime = now;
+      }
+
+      setInterval(runCalculation, 120);
+
+      const camImg = document.querySelector("#camerabox img");
+      const liveLabel = document.getElementById("liveLabel");
+      const connectionLabel = document.getElementById("connectionLabel");
+
+      camImg.onload = () => {
+        liveLabel.style.display = "flex";
+        connectionLabel.textContent = "";
+      };
+
+    
+    async function updateSensorBox(fire, smoke, temp, hum) {
+      const fireVal = document.getElementById("fireVal");
+      const smokeVal = document.getElementById("smokeVal");
+      const tempVal = document.getElementById("tempVal");
+      const humVal = document.getElementById("humVal");
+
+      const fireIcon = document.getElementById("fireIcon");
+      const smokeIcon = document.getElementById("smokeIcon");
+      const tempIcon = document.getElementById("tempIcon");
+      const humIcon = document.getElementById("humIcon");
+
+      [fireVal, smokeVal, tempVal, humVal, fireIcon, smokeIcon, tempIcon, humIcon].forEach(el =>
+        el.classList.remove("data-safe", "data-elevated", "data-high")
+      );
+
+      // Ateş
+      if (fire) {
+        fireVal.textContent = "Ateş Tespit Edildi!";
+        fireVal.classList.add("data-high");
+        fireIcon.classList.add("data-high");
+      } else {
+        fireVal.textContent = "Ateş Yok";
+        fireVal.classList.add("data-safe");
+        fireIcon.classList.add("data-safe");
+      }
+
+      // Duman
+      if (smoke > 70) {
+        smokeVal.textContent = `${smoke}% – Yüksek`;
+        smokeVal.classList.add("data-high");
+        smokeIcon.classList.add("data-high");
+      } else if (smoke > 40) {
+        smokeVal.textContent = `${smoke}% – Orta`;
+        smokeVal.classList.add("data-elevated");
+        smokeIcon.classList.add("data-elevated");
+      } else {
+        smokeVal.textContent = `${smoke}% – Düşük`;
+        smokeVal.classList.add("data-safe");
+        smokeIcon.classList.add("data-safe");
+      }
+
+      // Sıcaklık
+      if (temp > 40) {
+        tempVal.textContent = `${temp}°C – Tehlikeli`;
+        tempVal.classList.add("data-high");
+        tempIcon.classList.add("data-high");
+      } else if (temp > 30) {
+        tempVal.textContent = `${temp}°C – Yüksek`;
+        tempVal.classList.add("data-elevated");
+        tempIcon.classList.add("data-elevated");
+      } else {
+        tempVal.textContent = `${temp}°C – Normal`;
+        tempVal.classList.add("data-safe");
+        tempIcon.classList.add("data-safe");
+      }
+
+      // Nem
+      if (hum < 20 || hum > 80) {
+        humVal.textContent = `${hum}% – Tehlikeli`;
+        humVal.classList.add("data-high");
+        humIcon.classList.add("data-high");
+      } else if ((hum >= 20 && hum < 30) || (hum > 70 && hum <= 80)) {
+        humVal.textContent = `${hum}% – Orta`;
+        humVal.classList.add("data-elevated");
+        humIcon.classList.add("data-elevated");
+      } else {
+        humVal.textContent = `${hum}% – Normal`;
+        humVal.classList.add("data-safe");
+        humIcon.classList.add("data-safe");
+      }
+
+      lucide.createIcons();
+
+      document.querySelectorAll('.sensor-icon').forEach(container => {
+        const svg = container.querySelector('svg');
+        if (svg) {
+          if (container.classList.contains('data-high')) {
+            svg.style.stroke = '#dc302d';
+          } else if (container.classList.contains('data-elevated')) {
+            svg.style.stroke = '#f0a500';
+          } else {
+            svg.style.stroke = '#4caf50';
+          }
+        }
+      });
+    }
+
+    }); 
+  </script>
+</body>
+</html>
