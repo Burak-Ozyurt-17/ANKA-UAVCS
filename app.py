@@ -161,9 +161,10 @@ def map3d():
                 "SELECT * FROM devices WHERE user_id = ?",
                 (session["user_id"],)
             ).fetchone()
+            return render_template("3dmap.html",feed = feed, cam_feed = feed["cam_feed"], data_feed = feed["data_feed"], model_name = feed["model"])
         except TypeError:
-            feed = None
-        return render_template("3dmap.html",cam_feed = feed["cam_feed"], data_feed = feed["data_feed"], model_name = feed["model"])
+            return render_template("3dmap.html",feed = None)
+        
 
 
 @app.route("/riskmap")

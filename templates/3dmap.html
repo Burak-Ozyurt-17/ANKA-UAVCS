@@ -12,13 +12,16 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
+
+{% if feed == none %}
+  <a style="color:white">Lütfen araç kısmından kaynak belirtiniz</a>
+{% else %}
   <div id="viewDiv"></div>
   <div id="minimapDiv"></div>
   <div id="minimapDiv2"></div>
   <div id="infoPanel"></div>
   <div id="modelInfo">
     <a>Model Adı: {{ model_name }}</a><br>
-    <a>Kumanda Kaynağı:<span id ="controller_name"></span></a>
   </div>
   <div id="screenFilter"></div>
   <div id="serverResponseError"></div>
@@ -579,5 +582,6 @@
 
     }); 
   </script>
+{%endif%}
 </body>
 </html>
