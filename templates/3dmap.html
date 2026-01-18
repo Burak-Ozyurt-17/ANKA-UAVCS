@@ -24,8 +24,7 @@
     <a>Model Adı: {{ model_name }}</a><br>
   </div>
   <div id="screenFilter"></div>
-  <div id="serverResponseError"></div>
-
+  
     <div id="camerabox">
       <img style="bottom:0;left:0;z-index: -1;overflow-x: hidden;width:100%;"id="camerabox" src="{{cam_feed}}" alt="Kamera Görüntüsü">
       <div id="camerabox_box">
@@ -165,13 +164,11 @@
           });
           
           if (!response.ok) {
-            document.getElementById("controller_name").innerText = "Kayıt alınamadı";
-            document.getElementById("serverResponseError").style.display = "block";
+            
             throw new Error(`HTTP error! status: ${response.status}`);
           }
           
-          const data = await response.json();
-          
+          const data = await response.json();        
           const altBox = document.getElementById("altitudeValueBox");
           if (altBox) {
             const clampedAlt = Math.min(Math.max(data.altitude, 0), 100);
@@ -179,7 +176,6 @@
             updateAltitudeIndicator(clampedAlt);
             targetAltitude = clampedAlt;
           }
-          document.getElementById("controller_name").innerText = data.controller_info;
           updateSensorBox(
             data.fire, 
             data.smoke.toFixed(1), 
@@ -187,7 +183,6 @@
             data.humidity.toFixed(1)
           );
         } catch (error) {
-          document.getElementById("controller_name").innerText = "Kayıt alınamadı";
           console.error("Fetch error:", error);
         }
       }
