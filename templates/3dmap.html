@@ -292,18 +292,14 @@
           console.log("Error while saving log:", error)
         }
       }
-
-      let altitude = 50; 
-      let targetAltitude = 50;
-      let targetLatitude = 41.0320231;
-      let targetLongitude = 28.9802621; 
-
+ 
       let dronePoint = new Point({
-        x: 28.9802621,
-        y: 41.0320231,
-        z: altitude,
+        x: 0,
+        y: 0,
+        z: 50,
         spatialReference: { wkid: 4326 }
       });
+
       const droneSymbol = {
         type: "point-3d",
         symbolLayers: [{
@@ -316,6 +312,7 @@
           depth: 0.5
         }]
       };
+
       const markerSymbol = new SimpleMarkerSymbol({
         style: "circle",
         color: "red",
@@ -329,12 +326,6 @@
       minimapView.graphics.add(miniMarker);
 
       let prevPos = dronePoint.clone();
-      let targetPos = new Point({
-        x: prevPos.x + 0.0005,
-        y: prevPos.y ,
-        z: altitude + 0.0005,
-        spatialReference: prevPos.spatialReference
-      });
 
       const followDistance = 50;
       const tiltAngle = 75;
