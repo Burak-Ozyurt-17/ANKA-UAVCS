@@ -27,6 +27,7 @@ The platform leverages **ArcGIS** and **Leaflet.js** for advanced 3D and spatial
 
 The project aims to demonstrate how **AI and GIS** can enhance situational awareness, decision-making, and safety in UAV operations.
 
+Note: Please also install the other repository for data backend of this project [ANKA-UAVCS-FEED](https://github.com/Burak-Ozyurt-17/ANKA-UAVCS-FEED)
 ---
 ## Installation and Usage
 
